@@ -50,7 +50,11 @@ EOF
     end
 
     def add_index(table, column)
-      "    add_index :#{table}, :#{column}"
+      if "index_#{table}_on_#{column}".size > ActiveRecord::Base.connection.allowed_index_name_length
+        "    add_index :#{table}, :#{column}, name: '#{(table + '_' + column).first ActiveRecord::Base.connection.allowed_index_name_length}'"
+      else
+        "    add_index :#{table}, :#{column}"
+      end
     end
 
     def migration_version
