@@ -50,8 +50,9 @@ EOF
     end
 
     def add_index(table, column)
-      if "index_#{table}_on_#{column}".size > ActiveRecord::Base.connection.allowed_index_name_length
-        "    add_index :#{table}, :#{column}, name: '#{(table + '_' + column).first ActiveRecord::Base.connection.allowed_index_name_length}'"
+      index_name = Class.new.extend(ActiveRecord::ConnectionAdapters::SchemaStatements).index_name table, column
+      if index_name.size > ActiveRecord::Base.connection.allowed_index_name_length
+        "    add_index :#{table}, :#{column}, name: '#{index_name.first ActiveRecord::Base.connection.allowed_index_name_length}'"
       else
         "    add_index :#{table}, :#{column}"
       end
